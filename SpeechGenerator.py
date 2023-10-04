@@ -1,3 +1,5 @@
+import os.path
+
 import numpy as np
 from transformers import SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan
 from datasets import load_dataset
@@ -58,7 +60,7 @@ class SpeechGenerator:
         finally:
             pygame.mixer.quit()
 
-    def play_with_intro(self, intro_file='/Users/georgekour/repositories/pdf_voice/Intro_podcast.wav'):
+    def play_with_intro(self, output_folder, intro_file='/Users/georgekour/repositories/pdf_voice/Intro_podcast.wav'):
         pygame.init()
         pygame.mixer.init()
 
@@ -69,11 +71,11 @@ class SpeechGenerator:
             combined_speech = np.concatenate(speech_np_list, axis=0)  # Concatenate all speeches
 
             # Write the combined speech to a WAV file
-            sf.write("combined_speech.wav", combined_speech, samplerate=16000)
+            sf.write("temp_combined_speech.wav", combined_speech, samplerate=16000)
 
             # Load the intro file and the combined speech
             intro = sf.read(intro_file)[0]
-            combined = sf.read("combined_speech.wav")[0]
+            combined = sf.read("temp_combined_speech.wav")[0]
 
             if intro.ndim == 2 and intro.shape[1] == 2:
                 intro = np.mean(intro, axis=1)
@@ -82,10 +84,11 @@ class SpeechGenerator:
             final_audio = np.concatenate((intro, combined), axis=0)
 
             # Write the final audio to a WAV file
-            sf.write("final_audio.wav", final_audio, samplerate=16000)
+            audio_output = f"{os.path.join(output_folder,'smallcaster_audio_{utils.get_timestamp()')}.wav"
+            sf.write(audio_output, final_audio, samplerate=16000)
 
             # Play the final audio
-            pygame.mixer.music.load("final_audio.wav")
+            pygame.mixer.music.load(audio_output)
             pygame.mixer.music.play()
             while pygame.mixer.music.get_busy():
                 pygame.time.Clock().tick(10)
