@@ -60,7 +60,7 @@ class SpeechGenerator:
         finally:
             pygame.mixer.quit()
 
-    def play_with_intro(self, output_folder, intro_file='/Users/georgekour/repositories/pdf_voice/Intro_podcast.wav'):
+    def play_with_intro(self, output_folder, intro_file):
         pygame.init()
         pygame.mixer.init()
 
