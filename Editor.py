@@ -1,3 +1,6 @@
+import os.path
+
+import utils
 from openai_utils import gpt4
 
 
@@ -38,27 +41,8 @@ In any case, make sure you keep the main scientific points.
 
         edited_transcript = gpt4(Editor.edit_podcast_systemprompt+userprompt, transcript)
 
-
-
         return edited_transcript
 
-
-# Example Usage
-if __name__ == "__main__":
-    api_key = "YOUR_API_KEY"  # Replace with your OpenAI API key
-    editor = Editor(api_key)
-
-    # Example paper content
-    paper_content = """
-    This is a sample scientific paper. It discusses various topics related to AI and its impact on different industries.
-    """
-
-    # Stage 1: Generate podcast transcript from paper content
-    podcast_transcript = editor.create_podcast_transcript(paper_content)
-
-    # Stage 2: Edit transcript based on provided tag
-    #tags = ["humoristic", "for_child", "informative", "for_scientists"]
-    tags= ["for_child"]
-    edited_transcript = editor.edit_transcript(podcast_transcript, tags)
-
-    print(edited_transcript)
+    @staticmethod
+    def save(transcript, output_folder):
+        open(os.path.join(output_folder,f"interview_{utils.get_timestamp()}.txt"), "w").write(transcript)

@@ -4,7 +4,6 @@ import re
 
 def remove_unreadable_items(text):
 
-    text = re.sub(r'\b\d+\b', '', text)  # Remove standalone numbers
     text = re.sub(r'\|', '', text)  # Remove '|'
     text = re.sub(r'(\b\w{1,2}\b)', '', text)  # Remove single and two-letter words
     text = re.sub(r'\n', ' ', text)  # Replace newlines with spaces
@@ -49,33 +48,13 @@ def remove_unreadable_items(text):
 
     return text
 
+def line_starts_with_name(line):
+    pattern = r'^\w+\s*:'
+    return bool(re.match(pattern, line))
 
 
 def get_timestamp():
 	return datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")
 
 
-# Load model directly
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, T5ForConditionalGeneration
 
-
-
-class TextCleaner:
-    _model = None
-    _tokenizer = None
-    _cleaning_model = 'prakharz/dial-flant5-xl'  # 'NousResearch/Nous-Hermes-13b'#
-
-    @classmethod
-    def initialize(cls):
-        if cls._model is None:
-            # Load the model only when it's first accessed
-            cls._tokenizer = AutoTokenizer.from_pretrained(cls._cleaning_model)
-            cls._model = AutoModelForSeq2SeqLM.from_pretrained(cls._cleaning_model)
-
-    @classmethod
-    def clean(cls, prompt):
-        cls.initialize()
-        inputs = TextCleaner._tokenizer.encode(prompt, return_tensors="pt")
-        outputs = TextCleaner._model.generate(inputs, early_stopping=True, do_sample=False, max_new_tokens=2000)
-        decoded_outputs = TextCleaner._tokenizer.decode(outputs[0])
-        return decoded_outputs
